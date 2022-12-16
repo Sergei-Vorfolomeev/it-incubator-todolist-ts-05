@@ -1,85 +1,57 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
-import {FilterValueType, TasksType} from "../App";
-import {Button} from "./Button";
-import {Input} from "./Input";
+import React, {ChangeEvent, useState} from 'react';
+import {TodolistsStateType} from "../App";
+import {useDispatch, useSelector} from "react-redux";
+import {AppRootStateType} from "../state/store";
+import {addTaskAC} from "../state/tasksReducer";
 
 type TodolistPropsType = {
-    id: number
+    todolist: TodolistsStateType
+}
+export type TasksStateType = {
+    [key:string]: TasksType[]
+}
+export type TasksType = {
+    id: string
     title: string
-    tasks: TasksType[]
-    removeTask: (todolistID: number, taskID: string) => void
-    addTask: (todolistID: number, newTitle: string) => void
-    changeFilter: (todolistID: number, filterValue: FilterValueType) => void
-    changeCheckBox: (todolistID: number, taskID: string, checkBoxValue: boolean) => void
-    removeTodolist: (todolistID: number) => void
-    newTitle: string
-    setNewTitle: (newTitle:string) => void
-    error: string | null
-    setError: (error:string | null) => void
+    isDone: boolean
 }
 
-export const Todolist: React.FC<TodolistPropsType> = (props) => {
+export const Todolist: React.FC<TodolistPropsType> = ({todolist}) => {
+    const {id, title, filter} = todolist
 
+    const tasks = useSelector<AppRootStateType, TasksType[]>(state => state.tasks[id])
+    const dispatch = useDispatch()
 
-    const removeTaskHandler = (taskID: string) => {
-        props.removeTask(props.id, taskID)
-    }
-    const addTaskHandler = () => {
-        if (props.newTitle !== '') {
-            props.addTask(props.id, props.newTitle.trim())
-            props.setNewTitle('')
-        } else {
-            props.setError('Title is required')
-        }
-    }
+    const [newTaskTitle, setNewTaskTitle] = useState('')
 
-    const changeFilterHandler = (filterValue: FilterValueType) => {
-        props.changeFilter(props.id, filterValue)
+    const addTask = (id:string) => {
+        dispatch(addTaskAC(newTaskTitle, id))
     }
-    const onChangeCheckBoxHandler = (taskID: string, checkBoxValue: boolean) => {
-        props.changeCheckBox(props.id, taskID, checkBoxValue)
-    }
-    const removeTodolistHandler = () => {
-        props.removeTodolist(props.id)
+    const onChangeInputHandler = (event:ChangeEvent<HTMLInputElement>) => {
+        setNewTaskTitle(event.currentTarget.value)
     }
 
     return (
         <div>
-            <h3>
-                {props.title}
-                <Button name={'Del'}
-                        callBack={removeTodolistHandler}/>
-            </h3>
+            <h3>{title}</h3>
             <div>
-                <Input newTitle={props.newTitle}
-                       setNewTitle={props.setNewTitle}
-                       error={props.error}
-                       setError={props.setError}
-                       callBack={addTaskHandler}/>
-                <Button name={'+'}
-                        callBack={addTaskHandler}/>
+                <input onChange={onChangeInputHandler}/>
+                <button onClick={() => addTask(id)}>+</button>
             </div>
-            {props.error && <div>{props.error}</div>}
             <ul>
-                {props.tasks.map(el => {
+                {tasks?.map(el => {
                     return (
-                        <li key={el.taskId}>
-                            <input
-                                type="checkbox"
-                                checked={el.isDone}
-                                onChange={(event) => onChangeCheckBoxHandler(el.taskId, event.currentTarget.checked)}
-                            />
+                        <li key={el.id}>
+                            <input type="checkbox" checked={el.isDone}/>
                             <span>{el.title}</span>
-                            <Button name={'X'}
-                                    callBack={() => removeTaskHandler(el.taskId)}/>
                         </li>
                     )
                 })}
             </ul>
             <div>
-                <Button name={'All'} callBack={() => changeFilterHandler('all')}/>
-                <Button name={'Active'} callBack={() => changeFilterHandler('active')}/>
-                <Button name={'Completed'} callBack={() => changeFilterHandler('completed')}/>
+                <button>All</button>
+                <button>Active</button>
+                <button>Completed</button>
             </div>
         </div>
     );
