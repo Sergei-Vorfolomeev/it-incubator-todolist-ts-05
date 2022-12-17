@@ -25,7 +25,7 @@ export const InputComponent = (props: InputComponentPropsType) => {
         if (newTitle !== '') {
             props.callBack(newTitle.trim())
             setNewTitle('')
-        } else {
+        }else{
             setError('Title is required')
         }
     }

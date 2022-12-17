@@ -14,18 +14,41 @@ export const tasksReducer = (state: TasksStateType = initial, action: GeneralACT
         case "ADD-TODOLIST": {
             return {...state, [action.payload.newTodoID]: []}
         }
+        case "REMOVE-TASK": {
+            return {...state, [action.payload.todolistID]: state[action.payload.todolistID].filter(el => el.id !== action.payload.taskID)}
+        }
+        case "CHANGE-CHECK-BOX": {
+            return {...state, [action.payload.todolistID]: state[action.payload.todolistID].map(el => el.id === action.payload.taskID ? {...el, isDone: action.payload.checkBoxValue} : el)}
+        }
         default:
             return state
     }
 }
-type GeneralACType = addTaskACPropsType | addTodolistACType
-type addTaskACPropsType = ReturnType<typeof addTaskAC>
+
+type GeneralACType = addTaskACType | addTodolistACType | removeTaskACType | changeCheckBoxACType
+type addTaskACType = ReturnType<typeof addTaskAC>
+type removeTaskACType = ReturnType<typeof removeTaskAC>
+type changeCheckBoxACType = ReturnType<typeof changeCheckBoxAC>
 
 export const addTaskAC = (newTaskTitle: string, todolistID: string) => {
     return {
         type: 'ADD-TASK',
         payload: {
             newTaskTitle, todolistID
+        }
+    } as const
+}
+export const removeTaskAC = (todolistID: string, taskID: string) => {
+    return {
+        type: 'REMOVE-TASK',
+        payload: {todolistID, taskID}
+    } as const
+}
+export const changeCheckBoxAC = (checkBoxValue: boolean, todolistID: string, taskID: string) => {
+    return {
+        type: 'CHANGE-CHECK-BOX',
+        payload: {
+            checkBoxValue, todolistID, taskID
         }
     } as const
 }

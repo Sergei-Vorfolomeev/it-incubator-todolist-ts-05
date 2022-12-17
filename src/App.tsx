@@ -26,6 +26,7 @@ function App() {
     return (
         <div className="App">
             <InputComponent callBack={addTodolist}/>
+
             {todolists.map(el => {
                 return (
                     <Todolist key={el.id}
