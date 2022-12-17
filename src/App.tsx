@@ -19,8 +19,8 @@ function App() {
     const dispatch = useDispatch()
 
     const addTodolist = (newTitle: string) => {
-        dispatch(addTodolistAC(newTitle))
-
+        const newTodoID = v1()
+        dispatch(addTodolistAC(newTitle, newTodoID))
     }
 
     return (

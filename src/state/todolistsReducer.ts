@@ -6,21 +6,20 @@ const initial: TodolistsStateType[] = []
 export const todolistsReducer = (state:TodolistsStateType[] = initial, action: GeneralACType) => {
     switch (action.type) {
         case 'ADD-TODOLIST': {
-            const newID = v1()
-            const newTodo = {id: newID, title: action.payload.newTitle, filter: 'all'}
+            const newTodo = {id: action.payload.newTodoID, title: action.payload.newTitle, filter: 'all'}
            return [newTodo, ...state]
         }
         default: return state
     }
 }
 type GeneralACType = addTodolistACType
-type addTodolistACType = ReturnType<typeof addTodolistAC>
+export type addTodolistACType = ReturnType<typeof addTodolistAC>
 
-export const addTodolistAC = (newTitle: string) => {
+export const addTodolistAC = (newTitle: string, newTodoID: string) => {
     return {
         type: 'ADD-TODOLIST',
         payload: {
-            newTitle
+            newTitle, newTodoID
         }
     } as const
 }

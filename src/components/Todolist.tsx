@@ -24,8 +24,8 @@ export const Todolist: React.FC<TodolistPropsType> = ({todolist}) => {
 
     const [newTaskTitle, setNewTaskTitle] = useState('')
 
-    const addTask = (id:string) => {
-        dispatch(addTaskAC(newTaskTitle, id))
+    const addTask = (todolistID: string) => {
+        dispatch(addTaskAC(newTaskTitle, todolistID))
     }
     const onChangeInputHandler = (event:ChangeEvent<HTMLInputElement>) => {
         setNewTaskTitle(event.currentTarget.value)
@@ -39,7 +39,7 @@ export const Todolist: React.FC<TodolistPropsType> = ({todolist}) => {
                 <button onClick={() => addTask(id)}>+</button>
             </div>
             <ul>
-                {tasks?.map(el => {
+                {tasks.map(el => {
                     return (
                         <li key={el.id}>
                             <input type="checkbox" checked={el.isDone}/>
