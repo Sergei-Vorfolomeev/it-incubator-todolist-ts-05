@@ -2,8 +2,9 @@ import React, {ChangeEvent, useState, KeyboardEvent} from 'react';
 import {TodolistsStateType} from "../App";
 import {useDispatch, useSelector} from "react-redux";
 import {AppRootStateType} from "../state/store";
-import {addTaskAC, changeCheckBoxAC, removeTaskAC} from "../state/tasksReducer";
-import {changeFilterAC, removeTodolistAC} from "../state/todolistsReducer";
+import {addTaskAC, changeCheckBoxAC, changeTaskTitleAC, removeTaskAC} from "../state/tasksReducer";
+import {changeFilterAC, changeTodolistTitleAC, removeTodolistAC} from "../state/todolistsReducer";
+import {EditableSpan} from "./EditableSpan";
 
 type TodolistPropsType = {
     todolist: TodolistsStateType
@@ -57,6 +58,12 @@ export const Todolist: React.FC<TodolistPropsType> = ({todolist}) => {
     const changeFilter = (filterValue: FilterValueType) => {
         dispatch(changeFilterAC(filterValue, id))
     }
+    const changeTaskTitle = (newEditedTitle:string, todolistID: string, taskID: string) => {
+        dispatch(changeTaskTitleAC(newEditedTitle, todolistID, taskID))
+    }
+    const changeTodolistTitle = (newEditedTitle: string, todolistID: string) => {
+        dispatch(changeTodolistTitleAC(newEditedTitle, todolistID))
+    }
 
     if (filter === 'active') {
         tasks = tasks.filter(el => !el.isDone)
@@ -68,7 +75,8 @@ export const Todolist: React.FC<TodolistPropsType> = ({todolist}) => {
     return (
         <div>
             <h3>
-                {title}
+                <EditableSpan title={title} callBack={(newEditedTitle) => changeTodolistTitle(newEditedTitle, id)}/>
+                {/*{title}*/}
                 <button onClick={() => removeTodolist(id)}>Del</button>
             </h3>
             <div>
@@ -83,7 +91,7 @@ export const Todolist: React.FC<TodolistPropsType> = ({todolist}) => {
                         <li key={el.id}>
                             <input type="checkbox" checked={el.isDone}
                                    onChange={(event) => changeCheckBoxValue(event.currentTarget.checked, id, el.id)}/>
-                            <span>{el.title}</span>
+                            <EditableSpan title={el.title} callBack={(newEditedTitle:string) => changeTaskTitle(newEditedTitle, id, el.id)}/>
                             <button onClick={() => removeTask(id, el.id)}>X</button>
                         </li>
                     )
